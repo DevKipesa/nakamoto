@@ -7,19 +7,19 @@ const UserDetails = () => {
   const [scheduledDate, setScheduledDate] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [userId, setUserId] = useState("");
 
   const handleGetUserDetails = async () => {
     setIsButtonDisabled(true);
     try {
-      // Call the queryUserDetails function from the Motoko canister
-      const response = await nakamoto_backend.createUserDetails();
+      const response = await nakamoto_backend.getUserDetails(parseInt(userId, 10));
 
       if (response) {
         setUserDetails(response);
         setErrorMessage("");
       } else {
         setErrorMessage("User details not found");
-        setUserDetails(null);
+        setUserDetails(null)
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -32,8 +32,7 @@ const UserDetails = () => {
   const handleGetScheduledDate = async () => {
     setIsButtonDisabled(true);
     try {
-      // Call the function to get scheduled date from the Motoko canister
-      const response = await nakamoto_backend.getGarbageCollectionDate();
+      const response = await nakamoto_backend.getGarbageCollectionDate(parseInt(userId, 10));
 
       if (response) {
         setScheduledDate(response);
@@ -52,6 +51,15 @@ const UserDetails = () => {
 
   return (
     <div className="buttons">
+      <label htmlFor="userId">User ID:</label>
+      <input
+        type="text"
+        id="userId"
+        value={userId}
+        onChange={(e) => setUserId(e.target.value)}
+        style={{ marginRight: "10px" }}
+      />
+
       <button className="details"
         onClick={handleGetUserDetails}
         disabled={isButtonDisabled}
